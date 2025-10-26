@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Politikón Argentina</title>
+    <title>Politikón Argentina - La Grieta del Poder</title>
+    <meta name="description" content="Juego de mesa político argentino. Competí con tus amigos por ganar las elecciones">
     <meta name="theme-color" content="#8A2BE2">
     <link rel="manifest" href="manifest.json">
     <style>
@@ -15,25 +16,159 @@
         }
 
         body {
-            background: #f5f6fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* PANTALLA DE INICIO */
+        .pantalla {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #8A2BE2, #00BFFF, #DC143C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitulo {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        .btn-primario {
+            background: linear-gradient(45deg, #8A2BE2, #00BFFF);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .btn-primario:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        /* PANTALLA JUGADORES */
+        .form-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .input-grupo {
+            margin: 15px 0;
+        }
+
+        .input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #8A2BE2;
+        }
+
+        .foto-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .foto-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .btn-foto {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        /* CÁMARA */
+        #video {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .controles-camara {
+            display: none;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .btn-camara {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-tomar { background: #27ae60; color: white; }
+        .btn-cancelar { background: #e74c3c; color: white; }
+
+        /* JUEGO PRINCIPAL */
         .container {
             max-width: 400px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
+            display: none;
         }
 
         .header {
             background: #2c3e50;
             color: white;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
         }
 
@@ -42,8 +177,17 @@
             margin-bottom: 5px;
         }
 
-        .estado-partidos {
+        .turno-info {
+            background: #34495e;
+            color: white;
             padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .estado-partidos {
+            padding: 20px;
             background: #f8f9fa;
         }
 
@@ -51,31 +195,82 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
             color: white;
             font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .kirchnerismo { background: #00BFFF; }
-        .jxc { background: #FFD700; color: black; }
-        .lla { background: #8A2BE2; }
-        .izquierda { background: #DC143C; }
+        .partido.turno-activo {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin: 15px 0;
+        }
+
+        .kirchnerismo { 
+            background: #00BFFF;
+            border-left: 5px solid #0077BE;
+        }
+        .jxc { 
+            background: #FFD700;
+            color: black;
+            border-left: 5px solid #D4AF37;
+        }
+        .lla { 
+            background: #8A2BE2;
+            border-left: 5px solid #6A0DAD;
+        }
+        .izquierda { 
+            background: #DC143C;
+            border-left: 5px solid #B22222;
+        }
+
+        .partido-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .foto-jugador {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+        }
 
         .popularidad {
             background: rgba(0,0,0,0.2);
-            padding: 6px 12px;
-            border-radius: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
             font-size: 14px;
+            min-width: 70px;
+            text-align: center;
+            font-weight: bold;
         }
 
         .jxc .popularidad {
-            background: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.15);
+        }
+
+        .datos-extendidos {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .partido.turno-activo .datos-extendidos {
+            display: block;
         }
 
         .qr-section {
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             background: #ecf0f1;
         }
@@ -84,35 +279,48 @@
             background: linear-gradient(45deg, #8A2BE2, #00BFFF);
             color: white;
             border: none;
-            padding: 16px 32px;
+            padding: 18px 35px;
             border-radius: 25px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             margin: 10px 0;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
         }
 
-        .qr-button:active {
-            transform: scale(0.95);
+        .qr-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .contador-turnos {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 10px;
         }
 
         .resultado {
             padding: 20px;
-            margin: 10px;
+            margin: 15px;
             background: #ecf0f1;
-            border-radius: 12px;
-            min-height: 120px;
+            border-radius: 15px;
+            min-height: 150px;
+            transition: all 0.3s ease;
         }
 
         .accion-card {
             background: white;
             border-left: 4px solid;
-            padding: 15px;
+            padding: 18px;
             margin: 12px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .accion-card:hover {
+            transform: translateX(5px);
         }
 
         .k-card { border-left-color: #00BFFF; }
@@ -120,10 +328,20 @@
         .lla-card { border-left-color: #8A2BE2; }
         .izq-card { border-left-color: #DC143C; }
 
+        .efecto {
+            color: #2c3e50;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            border-left: 3px solid currentColor;
+        }
+
         .menu {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 15px;
             padding: 20px;
             background: #f8f9fa;
         }
@@ -132,18 +350,42 @@
             background: #34495e;
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 12px;
             cursor: pointer;
+            transition: all 0.3s ease;
             font-weight: 600;
         }
 
-        .menu-button:active {
-            background: #2c3e50;
+        .menu-button.activo {
+            background: #8A2BE2;
             transform: scale(0.98);
         }
 
-        /* Instalar PWA */
+        .elecciones-alerta {
+            background: linear-gradient(45deg, #DC143C, #8A2BE2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            animation: pulse 1s infinite;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .ganador {
+            background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+            color: black !important;
+            font-weight: bold;
+            transform: scale(1.05);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* INSTALAR APP */
         .install-btn {
             position: fixed;
             bottom: 20px;
@@ -151,47 +393,90 @@
             background: #27ae60;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.3);
             display: none;
+            z-index: 1001;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- PANTALLA DE INICIO -->
+    <div class="pantalla" id="pantallaInicio">
+        <div class="logo-container">
+            <div class="logo">POLITIKÓN</div>
+            <div class="subtitulo">Argentina - La Grieta del Poder</div>
+        </div>
+        <button class="btn-primario" onclick="mostrarPantallaJugadores()">
+            🗳️ COMENZAR ELECCIÓN
+        </button>
+    </div>
+
+    <!-- PANTALLA DE JUGADORES -->
+    <div class="pantalla" id="pantallaJugadores" style="display: none;">
+        <h2 style="margin-bottom: 2rem; color: #2c3e50;">Configurar Jugadores</h2>
+        <div class="form-container">
+            <div class="input-grupo">
+                <input type="number" class="input" id="numJugadores" min="2" max="4" value="4" 
+                       placeholder="Número de jugadores (2-4)">
+            </div>
+            <div id="inputsJugadores"></div>
+            <button class="btn-primario" onclick="asignarPartidos()" style="width: 100%; margin-top: 20px;">
+                ▶️ CONTINUAR
+            </button>
+        </div>
+        
+        <!-- CÁMARA -->
+        <video id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <div class="controles-camara" id="controlesCamara">
+            <button class="btn-camara btn-tomar" onclick="tomarFoto()">📸 Tomar Foto</button>
+            <button class="btn-camara btn-cancelar" onclick="cancelarFoto()">❌ Cancelar</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA ASIGNACIÓN PARTIDOS -->
+    <div class="pantalla" id="pantallaPartidos" style="display: none;">
+        <h2 style="margin-bottom: 1rem; color: #2c3e50;">Asignar Partidos</h2>
+        <p style="margin-bottom: 2rem; color: #666; text-align: center;">
+            Cada jugador elige su partido político
+        </p>
+        <div id="listaAsignacion"></div>
+        <button class="btn-primario" onclick="iniciarJuego()" 
+                style="width: 100%; margin-top: 2rem; background: linear-gradient(45deg, #8A2BE2, #00BFFF);">
+            🎮 COMENZAR JUEGO
+        </button>
+    </div>
+
+    <!-- JUEGO PRINCIPAL -->
+    <div class="container" id="juegoPrincipal">
         <div class="header">
             <h1>🇦🇷 Politikón Argentina</h1>
             <div class="subtitle">La Grieta del Poder</div>
         </div>
 
-        <div class="estado-partidos">
-            <div class="partido kirchnerismo">
-                <span>Unidad Popular</span>
-                <span class="popularidad">35%</span>
-            </div>
-            <div class="partido jxc">
-                <span>Propuesta Republicana</span>
-                <span class="popularidad">28%</span>
-            </div>
-            <div class="partido lla">
-                <span>Avance Liberal</span>
-                <span class="popularidad">25%</span>
-            </div>
-            <div class="partido izquierda">
-                <span>Frente de Izquierda</span>
-                <span class="popularidad">12%</span>
-            </div>
+        <div id="eleccionesAlert" style="display: none;" class="elecciones-alerta">
+            🗳️ ¡ELECCIONES SORPRESA! 🗳️
+        </div>
+
+        <div class="turno-info">
+            Turno actual: <span id="turno-actual">Unidad Popular</span>
+        </div>
+
+        <div class="estado-partidos" id="estadoPartidos">
+            <!-- Los partidos se generan dinámicamente -->
         </div>
 
         <div class="qr-section">
             <button class="qr-button" onclick="simularEscaneo()">
                 📷 ESCANEAR CARTA QR
             </button>
-            <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
-                Juego de mesa político - Instalá como app
-            </p>
+            <div class="contador-turnos">
+                Turnos hasta elecciones: <span id="turnos-restantes">3</span>
+            </div>
         </div>
 
         <div class="resultado" id="resultado">
@@ -201,16 +486,55 @@
         </div>
 
         <div class="menu">
-            <button class="menu-button" onclick="mostrarEstado()">📊 Estado</button>
-            <button class="menu-button" onclick="simularElecciones()">🗳️ Elecciones</button>
+            <button class="menu-button" onclick="toggleEstado()">📊 Estado</button>
+            <button class="menu-button" onclick="toggleElecciones()">🗳️ Elecciones</button>
             <button class="menu-button" onclick="reiniciarJuego()">🔄 Reiniciar</button>
-            <button class="menu-button" onclick="mostrarAyuda()">❓ Ayuda</button>
+            <button class="menu-button" onclick="toggleAyuda()">❓ Ayuda</button>
         </div>
     </div>
 
     <button class="install-btn" id="installBtn">📱 Instalar App</button>
 
     <script>
+        // ========== CONFIGURACIÓN INICIAL ==========
+        let jugadores = [];
+        let partidosAsignados = {};
+        let turnoActual = 0;
+        let turnosParaElecciones = 3;
+        let estadoMostrado = false;
+        let eleccionesMostradas = false;
+        let ayudaMostrada = false;
+        let jugadorFotoActual = null;
+        let streamCamara = null;
+
+        // Base de datos de partidos
+        const partidos = {
+            'K': { 
+                nombre: 'Unidad Popular', 
+                color: 'kirchnerismo', 
+                popularidad: 35,
+                clase: 'k-card'
+            },
+            'JxC': { 
+                nombre: 'Propuesta Republicana', 
+                color: 'jxc', 
+                popularidad: 28,
+                clase: 'jxc-card'
+            },
+            'LLA': { 
+                nombre: 'Avance Liberal', 
+                color: 'lla', 
+                popularidad: 25,
+                clase: 'lla-card'
+            },
+            'IZQ': { 
+                nombre: 'Frente de Izquierda', 
+                color: 'izquierda', 
+                popularidad: 12,
+                clase: 'izq-card'
+            }
+        };
+
         // ========== PWA INSTALL ==========
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
@@ -232,31 +556,299 @@
             }
         });
 
-        // ========== JUEGO ==========
-        const partidos = {
-            'K': { nombre: 'Unidad Popular', popularidad: 35 },
-            'JxC': { nombre: 'Propuesta Republicana', popularidad: 28 },
-            'LLA': { nombre: 'Avance Liberal', popularidad: 25 },
-            'IZQ': { nombre: 'Frente de Izquierda', popularidad: 12 }
-        };
+        // ========== SISTEMA DE CÁMARA ==========
+        function iniciarCamara(jugadorIndex) {
+            jugadorFotoActual = jugadorIndex;
+            const video = document.getElementById('video');
+            const controles = document.getElementById('controlesCamara');
+            
+            // Detener stream anterior si existe
+            if (streamCamara) {
+                streamCamara.getTracks().forEach(track => track.stop());
+            }
+            
+            navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'user' }, 
+                audio: false 
+            })
+            .then(function(stream) {
+                streamCamara = stream;
+                video.srcObject = stream;
+                video.style.display = 'block';
+                controles.style.display = 'flex';
+            })
+            .catch(function(err) {
+                console.log("Error con la cámara: " + err);
+                // Fallback: selector de archivos
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.capture = 'camera';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            jugadores[jugadorFotoActual].foto = e.target.result;
+                            const preview = document.getElementById(`fotoPreview${jugadorFotoActual}`);
+                            preview.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                input.click();
+            });
+        }
 
+        function tomarFoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const fotoData = canvas.toDataURL('image/png');
+            
+            // Guardar foto en el jugador
+            jugadores[jugadorFotoActual].foto = fotoData;
+            
+            // Actualizar preview
+            const preview = document.getElementById(`fotoPreview${jugadorFotoActual}`);
+            preview.src = fotoData;
+            
+            cancelarFoto();
+        }
+
+        function cancelarFoto() {
+            const video = document.getElementById('video');
+            const controles = document.getElementById('controlesCamara');
+            
+            if (streamCamara) {
+                streamCamara.getTracks().forEach(track => track.stop());
+                streamCamara = null;
+            }
+            
+            video.style.display = 'none';
+            controles.style.display = 'none';
+            jugadorFotoActual = null;
+        }
+
+        // ========== PANTALLA DE JUGADORES ==========
+        function mostrarPantallaJugadores() {
+            document.getElementById('pantallaInicio').style.display = 'none';
+            document.getElementById('pantallaJugadores').style.display = 'flex';
+            actualizarInputsJugadores();
+        }
+
+        function actualizarInputsJugadores() {
+            const numJugadores = parseInt(document.getElementById('numJugadores').value) || 4;
+            const container = document.getElementById('inputsJugadores');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < numJugadores; i++) {
+                const jugadorDiv = document.createElement('div');
+                jugadorDiv.className = 'input-grupo';
+                jugadorDiv.innerHTML = `
+                    <input type="text" class="input" placeholder="Jugador ${i + 1}" value="Jugador ${i + 1}">
+                    <div class="foto-container">
+                        <img id="fotoPreview${i}" class="foto-preview" src="https://ui-avatars.com/api/?name=J${i + 1}&background=3498db&color=fff&size=80" alt="Foto">
+                        <button type="button" class="btn-foto" onclick="iniciarCamara(${i})">📸 Tomar Foto</button>
+                    </div>
+                `;
+                container.appendChild(jugadorDiv);
+            }
+        }
+
+        // ========== ASIGNACIÓN DE PARTIDOS ==========
+        function asignarPartidos() {
+            const numJugadores = parseInt(document.getElementById('numJugadores').value) || 4;
+            const inputs = document.querySelectorAll('#inputsJugadores .input');
+            
+            jugadores = [];
+            for (let i = 0; i < numJugadores; i++) {
+                jugadores.push({
+                    nombre: inputs[i * 2].value || `Jugador ${i + 1}`,
+                    foto: document.getElementById(`fotoPreview${i}`).src,
+                    partido: null
+                });
+            }
+
+            document.getElementById('pantallaJugadores').style.display = 'none';
+            document.getElementById('pantallaPartidos').style.display = 'flex';
+            
+            const lista = document.getElementById('listaAsignacion');
+            lista.innerHTML = '';
+            
+            // Mezclar partidos disponibles
+            const partidosDisponibles = Object.keys(partidos).sort(() => Math.random() - 0.5);
+            
+            jugadores.forEach((jugador, index) => {
+                const partidoAsignado = partidosDisponibles[index];
+                const partido = partidos[partidoAsignado];
+                
+                jugador.partido = partidoAsignado;
+                partidosAsignados[jugador.nombre] = partidoAsignado;
+                
+                const div = document.createElement('div');
+                div.className = `partido ${partido.color}`;
+                div.style.margin = '15px 0';
+                div.innerHTML = `
+                    <div class="partido-info">
+                        <img src="${jugador.foto}" class="foto-jugador">
+                        <div style="flex: 1;">
+                            <div style="font-size: 18px;">${jugador.nombre}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">${partido.nombre}</div>
+                        </div>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        // ========== INICIAR JUEGO ==========
+        function iniciarJuego() {
+            document.getElementById('pantallaPartidos').style.display = 'none';
+            document.getElementById('juegoPrincipal').style.display = 'block';
+            
+            actualizarInterfazJuego();
+        }
+
+        function actualizarInterfazJuego() {
+            const container = document.getElementById('estadoPartidos');
+            container.innerHTML = '';
+            
+            jugadores.forEach((jugador, index) => {
+                const partido = partidos[jugador.partido];
+                const esTurnoActivo = index === turnoActual;
+                const div = document.createElement('div');
+                div.className = `partido ${partido.color} ${esTurnoActivo ? 'turno-activo' : ''}`;
+                div.innerHTML = `
+                    <div class="partido-info">
+                        <img src="${jugador.foto}" class="foto-jugador">
+                        <div style="flex: 1;">
+                            <div>${jugador.nombre}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">${partido.nombre}</div>
+                        </div>
+                        <span class="popularidad">${partido.popularidad}%</span>
+                    </div>
+                    ${esTurnoActivo ? `
+                    <div class="datos-extendidos">
+                        <div style="font-size: 14px; opacity: 0.9;">🎯 Turno activo - Escaneá una carta</div>
+                    </div>
+                    ` : ''}
+                `;
+                container.appendChild(div);
+            });
+            
+            const jugadorActual = jugadores[turnoActual];
+            document.getElementById('turno-actual').textContent = 
+                `${jugadorActual.nombre} (${partidos[jugadorActual.partido].nombre})`;
+        }
+
+        // ========== BOTONES TOGGLE ==========
+        function toggleEstado() {
+            const boton = event.target;
+            const resultado = document.getElementById('resultado');
+            
+            if (estadoMostrado) {
+                resultado.innerHTML = '<p style="text-align: center; color: #95a5a6;">Escaneá una carta para ver los efectos...</p>';
+                boton.classList.remove('activo');
+                estadoMostrado = false;
+            } else {
+                mostrarEstado();
+                boton.classList.add('activo');
+                estadoMostrado = true;
+                eleccionesMostradas = false;
+                ayudaMostrada = false;
+                document.querySelectorAll('.menu-button').forEach(btn => {
+                    if (btn !== boton) btn.classList.remove('activo');
+                });
+            }
+        }
+
+        function toggleElecciones() {
+            const boton = event.target;
+            const resultado = document.getElementById('resultado');
+            
+            if (eleccionesMostradas) {
+                resultado.innerHTML = '<p style="text-align: center; color: #95a5a6;">Escaneá una carta para ver los efectos...</p>';
+                boton.classList.remove('activo');
+                eleccionesMostradas = false;
+            } else {
+                simularElecciones();
+                boton.classList.add('activo');
+                eleccionesMostradas = true;
+                estadoMostrado = false;
+                ayudaMostrada = false;
+                document.querySelectorAll('.menu-button').forEach(btn => {
+                    if (btn !== boton) btn.classList.remove('activo');
+                });
+            }
+        }
+
+        function toggleAyuda() {
+            const boton = event.target;
+            const resultado = document.getElementById('resultado');
+            
+            if (ayudaMostrada) {
+                resultado.innerHTML = '<p style="text-align: center; color: #95a5a6;">Escaneá una carta para ver los efectos...</p>';
+                boton.classList.remove('activo');
+                ayudaMostrada = false;
+            } else {
+                mostrarAyuda();
+                boton.classList.add('activo');
+                ayudaMostrada = true;
+                estadoMostrado = false;
+                eleccionesMostradas = false;
+                document.querySelectorAll('.menu-button').forEach(btn => {
+                    if (btn !== boton) btn.classList.remove('activo');
+                });
+            }
+        }
+
+        // ========== MECÁNICAS DEL JUEGO ==========
         function simularEscaneo() {
             const cartasEjemplo = [
-                "K-P01|vendepatria|JxC|-8",
-                "JxC-M01|liberar_importaciones|K|-6|+5",
-                "LLA-S01|voto_bronca|K|-10",
-                "IZQ-M01|renta_basica|IZQ|+7|-4"
+                "K-P01|Discurso Patriótico|JxC|-8",
+                "JxC-M01|Apertura Comercial|K|-6|+5",
+                "LLA-S01|Movilización Anti-Casta|K|-10",
+                "IZQ-M01|Propuesta Social|IZQ|+7|-4",
+                "K-M01|Plan Social|K|+8|-3",
+                "JxC-P01|Denuncia Pública|K|-9",
+                "LLA-M01|Reforma Fiscal|LLA|+6|-2",
+                "IZQ-P01|Movilización Popular|JxC|-7"
             ];
             
             const cartaAleatoria = cartasEjemplo[Math.floor(Math.random() * cartasEjemplo.length)];
             procesarQR(cartaAleatoria);
+            
+            turnosParaElecciones--;
+            document.getElementById('turnos-restantes').textContent = turnosParaElecciones;
+            
+            if (turnosParaElecciones <= 0) {
+                setTimeout(realizarEleccionesAleatorias, 1000);
+            }
+        }
+
+        function realizarEleccionesAleatorias() {
+            const alerta = document.getElementById('eleccionesAlert');
+            alerta.style.display = 'block';
+            
+            setTimeout(() => {
+                alerta.style.display = 'none';
+                simularElecciones();
+                turnosParaElecciones = Math.floor(Math.random() * 3) + 3;
+                document.getElementById('turnos-restantes').textContent = turnosParaElecciones;
+            }, 2000);
         }
 
         function procesarQR(qrData) {
-            const [partido, codigo, tipo, objetivo, efecto1] = qrData.split('|');
+            const [partido, codigo, tipo, objetivo, efecto1, efecto2] = qrData.split('|');
             
-            let resultadoHTML = `<div class="accion-card ${partido}-card">
-                <strong>${partidos[partido].nombre}</strong> usó: ${tipo.toUpperCase()}`;
+            let resultadoHTML = `<div class="accion-card ${partidos[partido].clase}">
+                <strong>${partidos[partido].nombre}</strong> usó: <em>${tipo}</em>`;
             
             if (objetivo && objetivo !== 'undefined') {
                 resultadoHTML += `<br>Objetivo: ${partidos[objetivo]?.nombre || objetivo}`;
@@ -267,25 +859,50 @@
                 if (!isNaN(cambio)) {
                     if (objetivo && partidos[objetivo]) {
                         partidos[objetivo].popularidad += cambio;
-                        resultadoHTML += `<div style="color: #2c3e50; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.05); border-radius: 6px;">
-                            ${partidos[objetivo].nombre} ${cambio > 0 ? '+' : ''}${cambio}% popularidad
-                        </div>`;
+                        resultadoHTML += `<div class="efecto">${partidos[objetivo].nombre} ${cambio > 0 ? '+' : ''}${cambio}% popularidad</div>`;
+                    } else if (partido === objetivo || !objetivo) {
+                        partidos[partido].popularidad += cambio;
+                        resultadoHTML += `<div class="efecto">${partidos[partido].nombre} ${cambio > 0 ? '+' : ''}${cambio}% popularidad</div>`;
                     }
                 }
             }
-            
-            resultadoHTML += `</div>`;
-            
+
             document.getElementById('resultado').innerHTML = resultadoHTML;
+            
+            // Resetear botones toggle
+            estadoMostrado = false;
+            eleccionesMostradas = false;
+            ayudaMostrada = false;
+            document.querySelectorAll('.menu-button').forEach(btn => {
+                btn.classList.remove('activo');
+            });
+            
+            // Pasar al siguiente turno con animación
+            setTimeout(() => {
+                siguienteTurno();
+            }, 1500);
+        }
+
+        function siguienteTurno() {
+            turnoActual = (turnoActual + 1) % jugadores.length;
+            actualizarInterfazJuego();
         }
 
         function mostrarEstado() {
             let estadoHTML = '<h3>📊 Estado del Juego</h3>';
-            for (const [key, partido] of Object.entries(partidos)) {
-                estadoHTML += `<div class="accion-card ${key}-card">
-                    <strong>${partido.nombre}</strong>: ${partido.popularidad}% popularidad
+            jugadores.forEach(jugador => {
+                const partido = partidos[jugador.partido];
+                estadoHTML += `<div class="accion-card ${partido.clase}">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <img src="${jugador.foto}" class="foto-jugador" style="width: 50px; height: 50px;">
+                        <div>
+                            <strong>${jugador.nombre}</strong><br>
+                            <span style="font-size: 14px; opacity: 0.8;">${partido.nombre}</span>
+                        </div>
+                    </div>
+                    <div class="efecto">Popularidad: ${partido.popularidad}%</div>
                 </div>`;
-            }
+            });
             document.getElementById('resultado').innerHTML = estadoHTML;
         }
 
@@ -293,13 +910,28 @@
             let eleccionesHTML = '<h3>🗳️ RESULTADO ELECCIONES</h3>';
             const total = Object.values(partidos).reduce((sum, p) => sum + Math.max(0, p.popularidad), 0);
             
+            let ganador = null;
+            let maxPorcentaje = 0;
+            
             for (const [key, partido] of Object.entries(partidos)) {
                 const porcentaje = total > 0 ? ((Math.max(0, partido.popularidad) / total) * 100).toFixed(1) : 0;
                 const esGanador = porcentaje >= 40;
                 
-                eleccionesHTML += `<div class="accion-card ${key}-card" style="${esGanador ? 'background: gold !important; color: black !important;' : ''}">
+                if (porcentaje > maxPorcentaje) {
+                    maxPorcentaje = porcentaje;
+                    ganador = key;
+                }
+                
+                eleccionesHTML += `<div class="accion-card ${partido.clase} ${esGanador ? 'ganador' : ''}">
                     <strong>${partido.nombre}</strong>: ${porcentaje}%
                     ${esGanador ? '🏆 ¡GANADOR!' : ''}
+                </div>`;
+            }
+            
+            // Si no hay ganador con 40%, ballotage
+            if (maxPorcentaje < 40 && ganador) {
+                eleccionesHTML += `<div class="accion-card ganador">
+                    <strong>BALLOTAGE: ${partidos[ganador].nombre} gana con ${maxPorcentaje}%</strong>
                 </div>`;
             }
             
@@ -308,12 +940,7 @@
 
         function reiniciarJuego() {
             if (confirm('¿Reiniciar el juego?')) {
-                partidos.K.popularidad = 35;
-                partidos.JxC.popularidad = 28;
-                partidos.LLA.popularidad = 25;
-                partidos.IZQ.popularidad = 12;
-                document.getElementById('resultado').innerHTML = 
-                    '<p style="text-align: center; color: #95a5a6;">Juego reiniciado. ¡Que comience la campaña!</p>';
+                location.reload();
             }
         }
 
@@ -324,9 +951,10 @@
                     <strong>1. Turnos:</strong> Cada jugador escanea 1 carta por turno<br>
                     <strong>2. Cartas:</strong> Medidas, Polémicas, Sabotajes<br>
                     <strong>3. Objetivo:</strong> Llegar al 40% de popularidad<br>
-                    <strong>4. Estrategia:</strong> Atacar rivales y mejorar tu imagen
+                    <strong>4. Elecciones:</strong> Ocurren cada 3-5 turnos<br>
+                    <strong>5. Estrategia:</strong> Atacar rivales y mejorar tu imagen
                 </div>
-                <div style="margin-top: 10px; padding: 10px; background: #e8f4fd; border-radius: 8px;">
+                <div class="efecto" style="margin-top: 15px;">
                     <strong>💡 Tip:</strong> Instalá esta app para mejor experiencia
                 </div>
             `;
@@ -341,6 +969,9 @@
                     .catch(() => console.log('SW registration failed'));
             });
         }
+
+        // Event listeners
+        document.getElementById('numJugadores').addEventListener('input', actualizarInputsJugadores);
     </script>
 </body>
 </html>
