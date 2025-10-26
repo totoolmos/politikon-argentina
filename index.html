@@ -183,29 +183,279 @@
 
         .btn-camara:active {
             transform: scale(0.95);
-        }    /* BOTÓN PARA CERRAR MANUALMENTE LA CÁMARA */
-    .btn-cerrar-camara {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(255,255,255,0.2);
-        color: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 20px;
-        cursor: pointer;
-        z-index: 2001;
-    }
+        }
 
-    .btn-cerrar-camara:hover {
-        background: rgba(255,255,255,0.3);
-    }
+        /* BOTÓN PARA CERRAR MANUALMENTE LA CÁMARA */
+        .btn-cerrar-camara {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .btn-cerrar-camara:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* JUEGO PRINCIPAL */
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .turno-info {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .estado-partidos {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .partido {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .partido.turno-activo {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin: 15px 0;
+        }
+
+        .kirchnerismo { 
+            background: #00BFFF;
+            border-left: 5px solid #0077BE;
+        }
+        .jxc { 
+            background: #FFD700;
+            color: black;
+            border-left: 5px solid #D4AF37;
+        }
+        .lla { 
+            background: #8A2BE2;
+            border-left: 5px solid #6A0DAD;
+        }
+        .izquierda { 
+            background: #DC143C;
+            border-left: 5px solid #B22222;
+        }
+
+        .partido-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .foto-jugador {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+        }
+
+        .popularidad {
+            background: rgba(0,0,0,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            min-width: 70px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .jxc .popularidad {
+            background: rgba(0,0,0,0.15);
+        }
+
+        .datos-extendidos {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .partido.turno-activo .datos-extendidos {
+            display: block;
+        }
+
+        .qr-section {
+            padding: 25px;
+            text-align: center;
+            background: #ecf0f1;
+        }
+
+        .qr-button {
+            background: linear-gradient(45deg, #8A2BE2, #00BFFF);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
+        }
+
+        .qr-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .contador-turnos {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+
+        .resultado {
+            padding: 20px;
+            margin: 15px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .accion-card {
+            background: white;
+            border-left: 4px solid;
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .accion-card:hover {
+            transform: translateX(5px);
+        }
+
+        .k-card { border-left-color: #00BFFF; }
+        .jxc-card { border-left-color: #FFD700; }
+        .lla-card { border-left-color: #8A2BE2; }
+        .izq-card { border-left-color: #DC143C; }
+
+        .efecto {
+            color: #2c3e50;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            border-left: 3px solid currentColor;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .menu-button {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .menu-button.activo {
+            background: #8A2BE2;
+            transform: scale(0.98);
+        }
+
+        .elecciones-alerta {
+            background: linear-gradient(45deg, #DC143C, #8A2BE2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            animation: pulse 1s infinite;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .ganador {
+            background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+            color: black !important;
+            font-weight: bold;
+            transform: scale(1.05);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* INSTALAR APP */
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.3);
+            display: none;
+            z-index: 1001;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
-     <!-- PANTALLA DE INICIO -->
+    <!-- PANTALLA DE INICIO -->
     <div class="pantalla" id="pantallaInicio">
         <div class="logo-container">
             <div class="logo">POLITIKÓN</div>
@@ -392,6 +642,29 @@
                 usarSelectorArchivos(jugadorIndex);
                 overlay.style.display = 'none';
             });
+        }
+
+        function usarSelectorArchivos(jugadorIndex) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        jugadores[jugadorIndex].foto = e.target.result;
+                        const preview = document.getElementById(`fotoPreview${jugadorIndex}`);
+                        preview.src = e.target.result;
+                        preview.style.transform = 'scale(1.1)';
+                        setTimeout(() => preview.style.transform = 'scale(1)', 300);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
         }
 
         function tomarFoto() {
