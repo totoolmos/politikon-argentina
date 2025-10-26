@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politikón Argentina</title>
+    <meta name="theme-color" content="#8A2BE2">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .estado-partidos {
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .partido {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .kirchnerismo { background: #00BFFF; }
+        .jxc { background: #FFD700; color: black; }
+        .lla { background: #8A2BE2; }
+        .izquierda { background: #DC143C; }
+
+        .popularidad {
+            background: rgba(0,0,0,0.2);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .jxc .popularidad {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .qr-section {
+            padding: 20px;
+            text-align: center;
+            background: #ecf0f1;
+        }
+
+        .qr-button {
+            background: linear-gradient(45deg, #8A2BE2, #00BFFF);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .qr-button:active {
+            transform: scale(0.95);
+        }
+
+        .resultado {
+            padding: 20px;
+            margin: 10px;
+            background: #ecf0f1;
+            border-radius: 12px;
+            min-height: 120px;
+        }
+
+        .accion-card {
+            background: white;
+            border-left: 4px solid;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .k-card { border-left-color: #00BFFF; }
+        .jxc-card { border-left-color: #FFD700; }
+        .lla-card { border-left-color: #8A2BE2; }
+        .izq-card { border-left-color: #DC143C; }
+
+        .menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .menu-button {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .menu-button:active {
+            background: #2c3e50;
+            transform: scale(0.98);
+        }
+
+        /* Instalar PWA */
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇦🇷 Politikón Argentina</h1>
+            <div class="subtitle">La Grieta del Poder</div>
+        </div>
+
+        <div class="estado-partidos">
+            <div class="partido kirchnerismo">
+                <span>Unidad Popular</span>
+                <span class="popularidad">35%</span>
+            </div>
+            <div class="partido jxc">
+                <span>Propuesta Republicana</span>
+                <span class="popularidad">28%</span>
+            </div>
+            <div class="partido lla">
+                <span>Avance Liberal</span>
+                <span class="popularidad">25%</span>
+            </div>
+            <div class="partido izquierda">
+                <span>Frente de Izquierda</span>
+                <span class="popularidad">12%</span>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <button class="qr-button" onclick="simularEscaneo()">
+                📷 ESCANEAR CARTA QR
+            </button>
+            <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
+                Juego de mesa político - Instalá como app
+            </p>
+        </div>
+
+        <div class="resultado" id="resultado">
+            <p style="text-align: center; color: #95a5a6;">
+                Escaneá una carta para ver los efectos...
+            </p>
+        </div>
+
+        <div class="menu">
+            <button class="menu-button" onclick="mostrarEstado()">📊 Estado</button>
+            <button class="menu-button" onclick="simularElecciones()">🗳️ Elecciones</button>
+            <button class="menu-button" onclick="reiniciarJuego()">🔄 Reiniciar</button>
+            <button class="menu-button" onclick="mostrarAyuda()">❓ Ayuda</button>
+        </div>
+    </div>
+
+    <button class="install-btn" id="installBtn">📱 Instalar App</button>
+
+    <script>
+        // ========== PWA INSTALL ==========
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        // ========== JUEGO ==========
+        const partidos = {
+            'K': { nombre: 'Unidad Popular', popularidad: 35 },
+            'JxC': { nombre: 'Propuesta Republicana', popularidad: 28 },
+            'LLA': { nombre: 'Avance Liberal', popularidad: 25 },
+            'IZQ': { nombre: 'Frente de Izquierda', popularidad: 12 }
+        };
+
+        function simularEscaneo() {
+            const cartasEjemplo = [
+                "K-P01|vendepatria|JxC|-8",
+                "JxC-M01|liberar_importaciones|K|-6|+5",
+                "LLA-S01|voto_bronca|K|-10",
+                "IZQ-M01|renta_basica|IZQ|+7|-4"
+            ];
+            
+            const cartaAleatoria = cartasEjemplo[Math.floor(Math.random() * cartasEjemplo.length)];
+            procesarQR(cartaAleatoria);
+        }
+
+        function procesarQR(qrData) {
+            const [partido, codigo, tipo, objetivo, efecto1] = qrData.split('|');
+            
+            let resultadoHTML = `<div class="accion-card ${partido}-card">
+                <strong>${partidos[partido].nombre}</strong> usó: ${tipo.toUpperCase()}`;
+            
+            if (objetivo && objetivo !== 'undefined') {
+                resultadoHTML += `<br>Objetivo: ${partidos[objetivo]?.nombre || objetivo}`;
+            }
+            
+            if (efecto1) {
+                const cambio = parseInt(efecto1);
+                if (!isNaN(cambio)) {
+                    if (objetivo && partidos[objetivo]) {
+                        partidos[objetivo].popularidad += cambio;
+                        resultadoHTML += `<div style="color: #2c3e50; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.05); border-radius: 6px;">
+                            ${partidos[objetivo].nombre} ${cambio > 0 ? '+' : ''}${cambio}% popularidad
+                        </div>`;
+                    }
+                }
+            }
+            
+            resultadoHTML += `</div>`;
+            
+            document.getElementById('resultado').innerHTML = resultadoHTML;
+        }
+
+        function mostrarEstado() {
+            let estadoHTML = '<h3>📊 Estado del Juego</h3>';
+            for (const [key, partido] of Object.entries(partidos)) {
+                estadoHTML += `<div class="accion-card ${key}-card">
+                    <strong>${partido.nombre}</strong>: ${partido.popularidad}% popularidad
+                </div>`;
+            }
+            document.getElementById('resultado').innerHTML = estadoHTML;
+        }
+
+        function simularElecciones() {
+            let eleccionesHTML = '<h3>🗳️ RESULTADO ELECCIONES</h3>';
+            const total = Object.values(partidos).reduce((sum, p) => sum + Math.max(0, p.popularidad), 0);
+            
+            for (const [key, partido] of Object.entries(partidos)) {
+                const porcentaje = total > 0 ? ((Math.max(0, partido.popularidad) / total) * 100).toFixed(1) : 0;
+                const esGanador = porcentaje >= 40;
+                
+                eleccionesHTML += `<div class="accion-card ${key}-card" style="${esGanador ? 'background: gold !important; color: black !important;' : ''}">
+                    <strong>${partido.nombre}</strong>: ${porcentaje}%
+                    ${esGanador ? '🏆 ¡GANADOR!' : ''}
+                </div>`;
+            }
+            
+            document.getElementById('resultado').innerHTML = eleccionesHTML;
+        }
+
+        function reiniciarJuego() {
+            if (confirm('¿Reiniciar el juego?')) {
+                partidos.K.popularidad = 35;
+                partidos.JxC.popularidad = 28;
+                partidos.LLA.popularidad = 25;
+                partidos.IZQ.popularidad = 12;
+                document.getElementById('resultado').innerHTML = 
+                    '<p style="text-align: center; color: #95a5a6;">Juego reiniciado. ¡Que comience la campaña!</p>';
+            }
+        }
+
+        function mostrarAyuda() {
+            const ayudaHTML = `
+                <h3>❓ Cómo Jugar</h3>
+                <div class="accion-card">
+                    <strong>1. Turnos:</strong> Cada jugador escanea 1 carta por turno<br>
+                    <strong>2. Cartas:</strong> Medidas, Polémicas, Sabotajes<br>
+                    <strong>3. Objetivo:</strong> Llegar al 40% de popularidad<br>
+                    <strong>4. Estrategia:</strong> Atacar rivales y mejorar tu imagen
+                </div>
+                <div style="margin-top: 10px; padding: 10px; background: #e8f4fd; border-radius: 8px;">
+                    <strong>💡 Tip:</strong> Instalá esta app para mejor experiencia
+                </div>
+            `;
+            document.getElementById('resultado').innerHTML = ayudaHTML;
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(() => console.log('SW registered'))
+                    .catch(() => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
