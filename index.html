@@ -135,6 +135,17 @@
             flex: 1;
         }
 
+        .btn-sin-foto {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            flex: 1;
+        }
+
         /* CONTENEDOR DE CÁMARA QUE CUBRE TODA LA PANTALLA */
         .camara-overlay {
             position: fixed;
@@ -161,6 +172,8 @@
             display: flex;
             gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn-camara {
@@ -488,6 +501,7 @@
         <canvas id="canvas" style="display: none;"></canvas>
         <div class="controles-camara">
             <button class="btn-camara btn-tomar" onclick="tomarFoto()">📸 Tomar Foto</button>
+            <button class="btn-camara" style="background: #3498db;" onclick="usarAvatar()">🎭 Usar Avatar</button>
             <button class="btn-camara btn-cancelar" onclick="cancelarFoto()">❌ Cancelar</button>
         </div>
     </div>
@@ -638,33 +652,31 @@
             })
             .catch(function(err) {
                 console.log("Error con la cámara: " + err);
-                // Fallback: selector de archivos
-                usarSelectorArchivos(jugadorIndex);
-                overlay.style.display = 'none';
+                // Si falla la cámara, ofrecer avatar directamente
+                const controles = document.querySelector('.controles-camara');
+                controles.innerHTML = `
+                    <div style="text-align: center; color: white; margin-bottom: 15px;">
+                        ⚠️ No se pudo acceder a la cámara
+                    </div>
+                    <button class="btn-camara" style="background: #3498db; width: 100%;" onclick="usarAvatar()">
+                        🎭 Usar Avatar
+                    </button>
+                `;
             });
         }
 
-        function usarSelectorArchivos(jugadorIndex) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.capture = 'environment';
-            
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        jugadores[jugadorIndex].foto = e.target.result;
-                        const preview = document.getElementById(`fotoPreview${jugadorIndex}`);
-                        preview.src = e.target.result;
-                        preview.style.transform = 'scale(1.1)';
-                        setTimeout(() => preview.style.transform = 'scale(1)', 300);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
+        function usarAvatar() {
+            if (jugadorFotoActual !== null) {
+                // Usar avatar por defecto
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(jugadores[jugadorFotoActual].nombre)}&background=8A2BE2&color=fff&size=80`;
+                jugadores[jugadorFotoActual].foto = avatarUrl;
+                
+                const preview = document.getElementById(`fotoPreview${jugadorFotoActual}`);
+                preview.src = avatarUrl;
+                preview.style.transform = 'scale(1.1)';
+                setTimeout(() => preview.style.transform = 'scale(1)', 300);
+            }
+            cancelarFoto();
         }
 
         function tomarFoto() {
@@ -694,22 +706,15 @@
             preview.style.transform = 'scale(1.2)';
             setTimeout(() => preview.style.transform = 'scale(1)', 500);
             
-            // MOSTRAR CONFIRMACIÓN Y NO CERRAR AUTOMÁTICAMENTE
+            // MOSTRAR CONFIRMACIÓN
             const controles = document.querySelector('.controles-camara');
             controles.innerHTML = `
                 <div style="text-align: center; color: white; margin-bottom: 15px;">
                     ✅ Foto guardada correctamente
                 </div>
-                <button class="btn-camara btn-tomar" onclick="tomarOtraFoto()">📸 Tomar otra foto</button>
-                <button class="btn-camara" style="background: #3498db;" onclick="cancelarFoto()">✅ Usar esta foto</button>
-            `;
-        }
-
-        function tomarOtraFoto() {
-            const controles = document.querySelector('.controles-camara');
-            controles.innerHTML = `
-                <button class="btn-camara btn-tomar" onclick="tomarFoto()">📸 Tomar Foto</button>
-                <button class="btn-camara btn-cancelar" onclick="cancelarFoto()">❌ Cancelar</button>
+                <button class="btn-camara" style="background: #3498db; width: 100%;" onclick="cancelarFoto()">
+                    ✅ Continuar
+                </button>
             `;
         }
 
@@ -746,11 +751,30 @@
                     <input type="text" class="input" placeholder="Jugador ${i + 1}" value="Jugador ${i + 1}">
                     <div class="foto-container">
                         <img id="fotoPreview${i}" class="foto-preview" src="https://ui-avatars.com/api/?name=J${i + 1}&background=3498db&color=fff&size=80" alt="Foto">
-                        <button type="button" class="btn-foto" onclick="iniciarCamara(${i})">📸 Tomar Foto</button>
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <button type="button" class="btn-foto" onclick="iniciarCamara(${i})">📸 Foto</button>
+                            <button type="button" class="btn-sin-foto" onclick="usarAvatarDirecto(${i})">🎭 Avatar</button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(jugadorDiv);
             }
+        }
+
+        function usarAvatarDirecto(jugadorIndex) {
+            const nombre = document.querySelectorAll('#inputsJugadores .input')[jugadorIndex * 2].value || `Jugador ${jugadorIndex + 1}`;
+            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=8A2BE2&color=fff&size=80`;
+            
+            jugadores[jugadorIndex] = {
+                nombre: nombre,
+                foto: avatarUrl,
+                partido: null
+            };
+            
+            const preview = document.getElementById(`fotoPreview${jugadorIndex}`);
+            preview.src = avatarUrl;
+            preview.style.transform = 'scale(1.1)';
+            setTimeout(() => preview.style.transform = 'scale(1)', 300);
         }
 
         // ========== ASIGNACIÓN DE PARTIDOS ==========
@@ -760,9 +784,12 @@
             
             jugadores = [];
             for (let i = 0; i < numJugadores; i++) {
+                const nombre = inputs[i * 2].value || `Jugador ${i + 1}`;
+                const foto = document.getElementById(`fotoPreview${i}`).src;
+                
                 jugadores.push({
-                    nombre: inputs[i * 2].value || `Jugador ${i + 1}`,
-                    foto: document.getElementById(`fotoPreview${i}`).src,
+                    nombre: nombre,
+                    foto: foto,
                     partido: null
                 });
             }
@@ -951,6 +978,7 @@
                 if (!isNaN(cambio)) {
                     if (objetivo && partidos[objetivo]) {
                         partidos[objetivo].popularidad += cambio;
+                        resultadoHTML += `<div class="efecto">${                        partidos[objetivo].popularidad += cambio;
                         resultadoHTML += `<div class="efecto">${partidos[objetivo].nombre} ${cambio > 0 ? '+' : ''}${cambio}% popularidad</div>`;
                     } else if (partido === objetivo || !objetivo) {
                         partidos[partido].popularidad += cambio;
@@ -958,6 +986,19 @@
                     }
                 }
             }
+
+            if (efecto2) {
+                const cambio2 = parseInt(efecto2);
+                if (!isNaN(cambio2)) {
+                    partidos[partido].popularidad += cambio2;
+                    resultadoHTML += `<div class="efecto">${partidos[partido].nombre} ${cambio2 > 0 ? '+' : ''}${cambio2}% popularidad</div>`;
+                }
+            }
+
+            // Asegurar que las popularidades no sean negativas
+            Object.values(partidos).forEach(p => {
+                p.popularidad = Math.max(0, p.popularidad);
+            });
 
             document.getElementById('resultado').innerHTML = resultadoHTML;
             
@@ -1064,6 +1105,9 @@
 
         // Event listeners
         document.getElementById('numJugadores').addEventListener('input', actualizarInputsJugadores);
+
+        // Inicializar jugadores array
+        actualizarInputsJugadores();
     </script>
 </body>
 </html>
