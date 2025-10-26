@@ -183,11 +183,28 @@
 
         .btn-camara:active {
             transform: scale(0.95);
-        }
+        }    /* BOTÓN PARA CERRAR MANUALMENTE LA CÁMARA */
+    .btn-cerrar-camara {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 2001;
+    }
+
+    .btn-cerrar-camara:hover {
+        background: rgba(255,255,255,0.3);
+    }
     </style>
 </head>
 <body>
-    <!-- PANTALLA DE INICIO -->
      <!-- PANTALLA DE INICIO -->
     <div class="pantalla" id="pantallaInicio">
         <div class="logo-container">
@@ -215,7 +232,8 @@
     </div>
 
     <!-- CÁMARA OVERLAY (FUERA DE LAS PANTALLAS) -->
-    <div class="camara-overlay" id="camaraOverlay">
+    <div class="camara-overlay" id="camaraOverlay" onclick="if(event.target === this) cancelarFoto()">
+        <button class="btn-cerrar-camara" onclick="cancelarFoto()">×</button>
         <video id="video" class="camara-video" autoplay></video>
         <canvas id="canvas" style="display: none;"></canvas>
         <div class="controles-camara">
@@ -376,29 +394,6 @@
             });
         }
 
-        function usarSelectorArchivos(jugadorIndex) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.capture = 'environment';
-            
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        jugadores[jugadorIndex].foto = e.target.result;
-                        const preview = document.getElementById(`fotoPreview${jugadorIndex}`);
-                        preview.src = e.target.result;
-                        preview.style.transform = 'scale(1.1)';
-                        setTimeout(() => preview.style.transform = 'scale(1)', 300);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        }
-
         function tomarFoto() {
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
@@ -426,7 +421,23 @@
             preview.style.transform = 'scale(1.2)';
             setTimeout(() => preview.style.transform = 'scale(1)', 500);
             
-            cancelarFoto();
+            // MOSTRAR CONFIRMACIÓN Y NO CERRAR AUTOMÁTICAMENTE
+            const controles = document.querySelector('.controles-camara');
+            controles.innerHTML = `
+                <div style="text-align: center; color: white; margin-bottom: 15px;">
+                    ✅ Foto guardada correctamente
+                </div>
+                <button class="btn-camara btn-tomar" onclick="tomarOtraFoto()">📸 Tomar otra foto</button>
+                <button class="btn-camara" style="background: #3498db;" onclick="cancelarFoto()">✅ Usar esta foto</button>
+            `;
+        }
+
+        function tomarOtraFoto() {
+            const controles = document.querySelector('.controles-camara');
+            controles.innerHTML = `
+                <button class="btn-camara btn-tomar" onclick="tomarFoto()">📸 Tomar Foto</button>
+                <button class="btn-camara btn-cancelar" onclick="cancelarFoto()">❌ Cancelar</button>
+            `;
         }
 
         function cancelarFoto() {
